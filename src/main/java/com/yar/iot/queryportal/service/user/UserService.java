@@ -169,7 +169,11 @@ public class UserService
      * */
     @Override
     public UserResponse get(String id) throws BusinessException {
-        return makeResponse(getUserById(id));
+        UserDocument user = getUserById(id);
+        if (!user.isActive() && !isCurrentUserAdmin()) {
+            throw new BusinessException(USER_NOT_FOUND);
+        }
+        return makeResponse(user);
     }
 
 
@@ -189,6 +193,9 @@ public class UserService
                         .or(qUser.email.contains(search))
                         .or(qUser.name.contains(search))
                         .or(qUser.lastname.contains(search));
+        if (!isCurrentUserAdmin()) {
+            criteriaExpression.and(qUser.active.isTrue());
+        }
         Page<UserDocument> page = userRepository.findAll(criteriaExpression, pageable);
 
         return PaginationResponse.<UserResponse>builder()
