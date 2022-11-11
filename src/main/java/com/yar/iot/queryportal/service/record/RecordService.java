@@ -46,7 +46,7 @@ public class RecordService extends BaseService {
                 .accumulate(ScriptOperators.accumulatorBuilder()
                         .init("function() { return []; }")
                         .accumulate("function(bs, b) { return bs.concat(b); }")
-                        .accumulateArgs("$thermostat")
+                        .accumulateArgs("$" + param)
                         .merge("function(bs1, bs2) { return bs1.concat(bs2); }")
                         .finalize("function(bs) { " +
                                 " bs.sort(function(a, b) { return a - b });" +
